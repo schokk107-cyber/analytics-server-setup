@@ -1,0 +1,22 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION:-25.8}
+    container_name: clickhouse
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - ./data:/var/lib/clickhouse
+      - ./logs:/var/log/clickhouse-server
+      - ./backups:/backups
+      - ./config/backups.xml:/etc/clickhouse-server/config.d/backups.xml:ro
+    environment:
+      CLICKHOUSE_DB: ${DB_NAME}
+      CLICKHOUSE_USER: ${DB_USER}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
